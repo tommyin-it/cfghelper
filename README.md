@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CFG Helper – generator autoexec.cfg do CS2
 
-## Getting Started
+Prosta aplikacja webowa do budowania configu (autoexec.cfg) do Counter-Strike 2. Działa w 100% w przeglądarce, dane zapisuje w localStorage.
 
-First, run the development server:
+## Funkcje
+
+- **Ustawienia** – kuratorowana lista najważniejszych cvarów (radar, viewmodel, HUD, mysz, dźwięk, wideo, sieć, rozgrywka) z polskimi opisami, suwakami, wartościami domyślnymi i polecanymi.
+- **Bindy** – wizualna klawiatura (pełna + numpad + mysz), wykrywanie fizycznie naciśniętego klawisza/przycisku/kółka, edytor binda z akcjami, generatorem buy-bindów (koszty T/CT) i wyszukiwarką komend.
+- **Polecane** – gotowe presety: zoom radaru, granaty na klawiszach, buy bindy, telemetria (zamiennik net_graph), dźwięk pod granie, trening (sv_cheats), jumpthrow legalny w MM i inne.
+- **Komendy** – baza 5100+ komend i cvarów CS2, w tym ukrytych (bez flagi `release`) i dev-only, z flagami, domyślnymi wartościami i opisami. Dodawanie do cfg lub bindowanie jednym kliknięciem.
+- **Edytor** – wbudowany edytor tekstowy z podświetlaniem składni, wieloma plikami, autozapisem, importem `.cfg`/`.vcfg` i eksportem.
+- **Sugestie** – analiza configu: ostrzeżenia (bindy blokowane w MM, `snd_musicvolume 0`, bindy wymagające sv_cheats) i podpowiedzi z przyciskiem „zastosuj”.
+- **Podgląd na żywo**, pobieranie, kopiowanie, link udostępniający (config zakodowany w URL), instrukcja instalacji i opcje uruchamiania.
+
+Celownik (crosshair) celowo nie jest częścią generatora.
+
+## Stack
+
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · zustand · lucide-react. Deploy: Vercel.
+
+## Uruchomienie
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Baza komend
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`public/data/commands.json` jest generowany skryptem:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+python3 scripts/build-commands.py
+```
 
-## Learn More
+Źródła (w `data/raw/`):
 
-To learn more about Next.js, take a look at the following resources:
+- [ArmynC/ArminC-CS2-Cvars](https://github.com/ArmynC/ArminC-CS2-Cvars) – v1.40.7.9 (maj 2025): nazwy, domyślne wartości, opisy
+- [SuGolYolLom/CS2-Cvars-Cmds](https://github.com/SuGolYolLom/CS2-Cvars-Cmds) – v1.40.5.1 (listopad 2024): flagi `devonly` / `hidden`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Widoczność: `release` = widoczna w konsoli, `hidden` = bez flagi release (nie podpowiada się, zwykle da się ustawić), `dev` = tylko build deweloperski.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Licencja
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT. Dane cvarów: CC0 (źródła powyżej).

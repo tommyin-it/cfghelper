@@ -1,0 +1,113 @@
+import type { ActionDef } from "@/lib/types";
+
+/**
+ * Akcje, które można przypisać do klawisza. Część z nich (np. +jump) nie występuje
+ * w dumpie cvarlist, bo są rejestrowane przez system inputu – dlatego są tu ręcznie.
+ */
+export const ACTION_GROUPS: { id: string; label: string }[] = [
+  { id: "movement", label: "Ruch" },
+  { id: "weapon", label: "Broń i ekwipunek" },
+  { id: "grenades", label: "Granaty" },
+  { id: "comms", label: "Komunikacja" },
+  { id: "ui", label: "Interfejs" },
+  { id: "toggles", label: "Przełączniki (toggle)" },
+  { id: "practice", label: "Trening (sv_cheats)" },
+];
+
+export const ACTIONS: ActionDef[] = [
+  // ruch
+  { command: "+forward", label: "Do przodu", group: "movement" },
+  { command: "+back", label: "Do tyłu", group: "movement" },
+  { command: "+left", label: "W lewo (strafe)", group: "movement", desc: "W CS2 +left/+right to strafe w lewo/prawo" },
+  { command: "+right", label: "W prawo (strafe)", group: "movement" },
+  { command: "+jump", label: "Skok", group: "movement" },
+  { command: "+duck", label: "Kucanie", group: "movement" },
+  { command: "+sprint", label: "Chodzenie (walk)", group: "movement", desc: "W CS2 chodzenie to +sprint (dawniej +speed)" },
+  { command: "+turnleft", label: "Obrót w lewo", group: "movement" },
+  { command: "+turnright", label: "Obrót w prawo", group: "movement" },
+  // broń
+  { command: "+attack", label: "Strzał (ogień główny)", group: "weapon" },
+  { command: "+attack2", label: "Ogień alternatywny / zoom", group: "weapon" },
+  { command: "+reload", label: "Przeładowanie", group: "weapon" },
+  { command: "+use", label: "Użyj (defuse, drzwi, bomba)", group: "weapon" },
+  { command: "drop", label: "Wyrzuć broń", group: "weapon" },
+  { command: "lastinv", label: "Poprzednia broń (quick switch)", group: "weapon" },
+  { command: "invnext", label: "Następna broń", group: "weapon" },
+  { command: "invprev", label: "Poprzednia broń (lista)", group: "weapon" },
+  { command: "slot1", label: "Broń główna (slot1)", group: "weapon" },
+  { command: "slot2", label: "Pistolet (slot2)", group: "weapon" },
+  { command: "slot3", label: "Nóż (slot3)", group: "weapon" },
+  { command: "slot4", label: "Granaty – cykl (slot4)", group: "weapon" },
+  { command: "slot5", label: "Bomba (slot5)", group: "weapon" },
+  { command: "slot11", label: "Zeus (slot11)", group: "weapon" },
+  { command: "slot12", label: "Healthshot (slot12)", group: "weapon" },
+  { command: "+lookatweapon", label: "Obejrzyj broń (inspect)", group: "weapon" },
+  { command: "switchhands", label: "Zmień rękę (lewa/prawa)", group: "weapon" },
+  { command: "+quickinv", label: "Kółko ekwipunku", group: "weapon" },
+  { command: "buymenu", label: "Menu kupowania", group: "weapon" },
+  { command: "autobuy", label: "Autobuy (wg cl_autobuy)", group: "weapon" },
+  { command: "rebuy", label: "Rebuy (wg cl_rebuy)", group: "weapon" },
+  // granaty
+  { command: "slot6", label: "Granat HE (slot6)", group: "grenades" },
+  { command: "slot7", label: "Flash (slot7)", group: "grenades" },
+  { command: "slot8", label: "Smoke (slot8)", group: "grenades" },
+  { command: "slot9", label: "Decoy (slot9)", group: "grenades" },
+  { command: "slot10", label: "Molotov / Incendiary (slot10)", group: "grenades" },
+  { command: "+quickgrenaderadial", label: "Kółko granatów", group: "grenades" },
+  { command: "use weapon_hegrenade", label: "HE (use weapon_hegrenade)", group: "grenades" },
+  { command: "use weapon_flashbang", label: "Flash (use weapon_flashbang)", group: "grenades" },
+  { command: "use weapon_smokegrenade", label: "Smoke (use weapon_smokegrenade)", group: "grenades" },
+  { command: "use weapon_molotov; use weapon_incgrenade", label: "Molotov/Incendiary (use ...)", group: "grenades" },
+  { command: "use weapon_decoy", label: "Decoy (use weapon_decoy)", group: "grenades" },
+  // komunikacja
+  { command: "+voicerecord", label: "Mikrofon (push-to-talk)", group: "comms" },
+  { command: "messagemode", label: "Czat ogólny", group: "comms" },
+  { command: "messagemode2", label: "Czat drużynowy", group: "comms" },
+  { command: "player_ping", label: "Ping (wskaż miejsce)", group: "comms" },
+  { command: "+radialradio", label: "Radio kołowe 1", group: "comms" },
+  { command: "+radialradio2", label: "Radio kołowe 2", group: "comms" },
+  { command: "+radialradio3", label: "Radio kołowe 3", group: "comms" },
+  { command: "radio", label: "Radio (menu)", group: "comms" },
+  { command: "radio1", label: "Radio 1", group: "comms" },
+  { command: "radio2", label: "Radio 2", group: "comms" },
+  { command: "radio3", label: "Radio 3", group: "comms" },
+  { command: "voice_modenable_toggle", label: "Włącz/wyłącz voice chat", group: "comms" },
+  { command: "+spray_menu", label: "Menu spray'a", group: "comms" },
+  // interfejs
+  { command: "+showscores", label: "Tablica wyników", group: "ui" },
+  { command: "+cl_show_team_equipment", label: "Pokaż ekwipunek drużyny", group: "ui" },
+  { command: "teammenu", label: "Wybór drużyny", group: "ui" },
+  { command: "toggleconsole", label: "Konsola", group: "ui" },
+  { command: "toggleradarscale", label: "Przełącz skalę radaru", group: "ui", desc: "Przełącza między cl_radar_scale i cl_radar_scale_alternate" },
+  { command: "callvote", label: "Głosowanie", group: "ui" },
+  { command: "demoui", label: "Panel demo", group: "ui" },
+  { command: "demo_togglepause", label: "Pauza demo", group: "ui" },
+  { command: "jpeg", label: "Zrzut ekranu", group: "ui" },
+  { command: "disconnect", label: "Rozłącz", group: "ui" },
+  // toggle
+  { command: "incrementvar cl_radar_scale 0.25 1.0 0.05", label: "Radar: powiększ (+0.05)", group: "toggles" },
+  { command: "incrementvar cl_radar_scale 0.25 1.0 -0.05", label: "Radar: pomniejsz (-0.05)", group: "toggles" },
+  { command: "toggle cl_radar_always_centered 0 1", label: "Radar: centrowanie on/off", group: "toggles" },
+  { command: "toggle cl_hud_telemetry_ping_show 0 2", label: "Ping w HUD on/off", group: "toggles" },
+  { command: "toggle cl_showfps 0 1", label: "Licznik FPS on/off", group: "toggles" },
+  { command: "toggle snd_voipvolume 0 1", label: "Wycisz voice (głośność 0/1)", group: "toggles" },
+  { command: "toggle volume 0.1 1", label: "Głośność gry 0.1 / 1", group: "toggles" },
+  { command: "toggle cl_crosshairsize 3 1000", label: "Celownik do lineupów (rozmiar 3/1000)", group: "toggles" },
+  { command: "toggle cl_teamid_overhead_mode 0 3", label: "ID nad głowami on/off", group: "toggles" },
+  { command: "toggle cl_prefer_lefthanded 0 1", label: "Lewa/prawa ręka (cvar)", group: "toggles" },
+  { command: "toggle spec_show_xray 0 1", label: "X-ray w demo on/off", group: "toggles" },
+  // trening
+  { command: "noclip", label: "Noclip (latanie)", group: "practice" },
+  { command: "sv_rethrow_last_grenade", label: "Powtórz ostatni granat", group: "practice" },
+  { command: "bot_place", label: "Postaw bota", group: "practice" },
+  { command: "toggle bot_stop 0 1", label: "Zatrzymaj boty on/off", group: "practice" },
+  { command: "god", label: "God mode", group: "practice" },
+  { command: "toggle cl_showpos 0 1", label: "Pozycja gracza on/off", group: "practice" },
+  { command: "mp_restartgame 1", label: "Restart rundy", group: "practice" },
+  { command: "give weapon_awp", label: "Daj AWP", group: "practice" },
+  { command: "toggle sv_grenade_trajectory_prac_pipreview 0 1", label: "Podgląd trajektorii on/off", group: "practice" },
+];
+
+export const ACTION_BY_COMMAND: Record<string, ActionDef> = Object.fromEntries(
+  ACTIONS.map((a) => [a.command, a]),
+);

@@ -1,0 +1,42 @@
+{
+  "count": 5136,
+  "stats": {
+    "release": 1185,
+    "hidden": 1620,
+    "dev": 2331,
+    "cmd": 1162,
+    "cvar": 3974,
+    "cheat": 1430
+  },
+  "sources": [
+    {
+      "name": "ArmynC/ArminC-CS2-Cvars",
+      "version": "1.40.7.9",
+      "date": "2025-05-19"
+    },
+    {
+      "name": "SuGolYolLom/CS2-Cvars-Cmds",
+      "version": "1.40.5.1",
+      "date": "2024-11-15"
+    }
+  ],
+  "categories": {
+    "actions": "Akcje (+/-)",
+    "scripting": "Bindy i skrypty",
+    "radar": "Radar",
+    "crosshair": "Celownik",
+    "viewmodel": "Viewmodel",
+    "input": "Mysz i sterowanie",
+    "audio": "Dźwięk",
+    "hud": "HUD i interfejs gry",
+    "network": "Sieć i matchmaking",
+    "video": "Wideo i wydajność",
+    "server": "Serwer i rozgrywka",
+    "bots": "Boty i nawigacja",
+    "demo": "Demo i GOTV",
+    "ui": "Menu i UI",
+    "dev": "Debug i deweloperskie",
+    "client": "Klient (inne)",
+    "other": "Inne"
+  }
+}
