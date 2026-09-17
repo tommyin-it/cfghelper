@@ -1,11 +1,10 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { Crosshair, Trash2, Copy, Pencil, KeyboardIcon } from "lucide-react";
+import { Crosshair, Trash2, Pencil, KeyboardIcon } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { CODE_TO_KEY, keyFromMouseButton, keyLabel, KEY_BY_ID } from "@/data/keys";
 import { bindLine } from "@/lib/generate";
-import { copyText } from "@/lib/utils";
-import { Button, Card, SectionTitle, Kbd } from "../ui/ui";
+import { Button, Card, CopyButton, PageHeader, SectionTitle, Kbd } from "../ui/ui";
 import { KeyPicker } from "./KeyPicker";
 import { Keyboard } from "./Keyboard";
 import { BindEditor } from "./BindEditor";
@@ -76,24 +75,21 @@ export function BindsTab() {
 
   return (
     <div className="space-y-3">
+      <PageHeader title="Bindy" desc="Kliknij klawisz na klawiaturze, żeby przypisać mu komendę. Pomarańczowe klawisze mają już bind.">
+        <span className="text-xs text-muted tnum">{bindList.length} zbindowanych</span>
+        <Button size="sm" variant={capture ? "accent2" : "default"} onClick={() => setCapture(!capture)}>
+          <Crosshair className="h-3.5 w-3.5" />
+          {capture ? "Nasłuchuję… (Esc anuluje)" : "Wykryj naciśnięty klawisz"}
+        </Button>
+      </PageHeader>
       <Card className="p-3">
-        <SectionTitle
-          right={
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-muted">{bindList.length} zbindowanych</span>
-              <Button size="xs" variant={capture ? "accent2" : "default"} onClick={() => setCapture(!capture)}>
-                <Crosshair className="h-3.5 w-3.5" />
-                {capture ? "Nasłuchuję… (Esc anuluje)" : "Wykryj naciśnięty klawisz"}
-              </Button>
-            </div>
-          }
-        >
+        <SectionTitle>
           <span className="inline-flex items-center gap-1.5">
             <KeyboardIcon className="h-4 w-4 text-accent" /> Klawiatura
           </span>
         </SectionTitle>
         {capture && (
-          <div className="mb-2 rounded-md border border-accent2/40 bg-accent2/10 px-3 py-2 text-xs text-accent2 fade-in">
+          <div className="pop-in mb-2 rounded-md border border-accent2/30 bg-accent2/5 px-3 py-2 text-xs text-accent2">
             Naciśnij dowolny klawisz, przycisk myszy lub przewiń kółkiem – zostanie zaznaczony na klawiaturze.
             {lastCaptured && (
               <>
@@ -104,9 +100,7 @@ export function BindsTab() {
           </div>
         )}
         <Keyboard binds={binds} selected={selectedKey} onSelect={(k) => selectKey(k)} />
-        <div className="text-[11px] text-muted mt-1">
-          Kliknij klawisz, aby przypisać komendę. Klawisze z bindem są podświetlone na pomarańczowo. Esc jest zarezerwowany przez grę.
-        </div>
+        <div className="text-[11px] text-muted mt-1">Esc jest zarezerwowany przez grę i nie da się go zbindować.</div>
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
@@ -118,7 +112,7 @@ export function BindsTab() {
           ) : (
             <div className="space-y-1 max-h-[480px] overflow-y-auto pr-1">
               {bindList.map(([key, cmd]) => (
-                <div key={key} className="flex items-center gap-2 rounded-md border border-border bg-panel2 px-2 py-1.5 text-xs group">
+                <div key={key} className="flex items-center gap-2 rounded-md border border-border bg-panel2 px-2 py-1.5 text-xs group transition-colors duration-150 ease hover:border-border3">
                   <KeyPicker
                     value={key}
                     onChange={(k) => {
@@ -135,20 +129,11 @@ export function BindsTab() {
                   <code className="flex-1 font-mono text-[11px] text-accent-hi truncate" title={cmd}>
                     {cmd}
                   </code>
-                  <button className="text-muted hover:text-text" title="Edytuj" onClick={() => selectKey(key)}>
+                  <button className="btn rounded-md p-1 text-muted hover:text-text hover:bg-panel3" title="Edytuj" onClick={() => selectKey(key)}>
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
-                  <button
-                    className="text-muted hover:text-text"
-                    title="Kopiuj linię bind"
-                    onClick={async () => {
-                      await copyText(bindLine(key, cmd));
-                      toast("Skopiowano");
-                    }}
-                  >
-                    <Copy className="h-3.5 w-3.5" />
-                  </button>
-                  <button className="text-muted hover:text-danger" title="Usuń" onClick={() => removeBind(key)}>
+                  <CopyButton iconOnly text={() => bindLine(key, cmd)} title="Kopiuj linię bind" />
+                  <button className="btn rounded-md p-1 text-muted hover:text-danger hover:bg-danger/5" title="Usuń" onClick={() => removeBind(key)}>
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>

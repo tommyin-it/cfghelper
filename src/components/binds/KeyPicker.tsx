@@ -32,7 +32,7 @@ export function KeyPicker({
         onClick={() => setOpen(true)}
         data-testid="key-picker"
         className={cn(
-          "inline-flex items-center gap-1 rounded-md border px-2 font-mono transition-colors whitespace-nowrap",
+          "btn inline-flex items-center gap-1 rounded-md border px-2 font-mono whitespace-nowrap",
           size === "xs" ? "h-6 text-[11px]" : "h-8 text-xs",
           value
             ? "border-accent/50 bg-accent/10 text-accent-hi hover:bg-accent/20 hover:border-accent"

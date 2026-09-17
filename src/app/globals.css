@@ -1,51 +1,214 @@
 @import "tailwindcss";
 
+/* ============================================================
+   CFG Helper – jasny design system
+   Zasady: animujemy tylko transform/opacity, easing ease-out z mocną krzywą,
+   czasy 100–250 ms, feedback wciśnięcia scale(0.97), wejścia od scale(0.96)+opacity.
+   ============================================================ */
+
 @theme {
-  --color-bg: #0a0d13;
-  --color-panel: #10151f;
-  --color-panel2: #161c28;
-  --color-panel3: #1c2331;
-  --color-border: #242d3d;
-  --color-border2: #2f3a4e;
-  --color-text: #e6e9ef;
-  --color-muted: #8a94a6;
-  --color-accent: #f5a524;
-  --color-accent-hi: #ffc247;
-  --color-accent2: #22d3ee;
-  --color-ok: #34d399;
-  --color-warn: #fbbf24;
-  --color-danger: #f87171;
-  --color-purple: #c084fc;
+  --color-bg: #f5f5f3;
+  --color-panel: #ffffff;
+  --color-panel2: #f7f7f5;
+  --color-panel3: #efefec;
+  --color-border: #e7e7e3;
+  --color-border2: #d9d9d4;
+  --color-border3: #bdbdb7;
+  --color-text: #1b1b1f;
+  --color-muted: #6f6f76;
+  --color-ink: #1b1b1f;
+  --color-ink-hover: #303036;
+  --color-accent: #f26d1b;
+  --color-accent-hi: #b04a08;
+  --color-accent2: #2d68f6;
+  --color-ok: #1f8a4c;
+  --color-warn: #b7791f;
+  --color-danger: #d13438;
+  --color-purple: #7c3aed;
+
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* mocne krzywe (easing.dev) – nadpisują też utility ease-out / ease-in-out */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
-html, body {
+html,
+body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  background-image:
-    radial-gradient(1200px 600px at 10% -10%, rgba(245, 165, 36, 0.08), transparent 60%),
-    radial-gradient(900px 500px at 100% 0%, rgba(34, 211, 238, 0.06), transparent 60%);
-  background-attachment: fixed;
+  font-feature-settings: "cv11", "ss03";
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2f3a4e transparent;
+  scrollbar-color: #d2d2cd transparent;
 }
 *::-webkit-scrollbar { width: 8px; height: 8px; }
-*::-webkit-scrollbar-thumb { background: #2f3a4e; border-radius: 8px; }
+*::-webkit-scrollbar-thumb { background: #d2d2cd; border-radius: 8px; }
+
+::selection {
+  background: rgba(45, 104, 246, 0.18);
+}
+
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-accent2) 55%, transparent);
+  outline-offset: 2px;
+}
 
 input[type="range"] {
-  accent-color: var(--color-accent);
+  accent-color: var(--color-ink);
+  height: 1rem;
+}
+
+/* ---------- feedback wciśnięcia (każdy element klikalny) */
+.btn {
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease,
+    opacity 150ms ease;
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* ---------- wejścia / wyjścia */
+.enter-fade {
+  opacity: 1;
+  transition: opacity 120ms ease;
+  @starting-style {
+    opacity: 0;
+  }
+}
+
+.pop-in {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 150ms var(--ease-out), transform 150ms var(--ease-out);
+  @starting-style {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/* crossfade treści (np. "Kopiuj" → "Skopiowano") – blur maskuje podmianę */
+.swap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  opacity: 1;
+  filter: blur(0);
+  transition: opacity 180ms ease, filter 180ms ease;
+  @starting-style {
+    opacity: 0;
+    filter: blur(2px);
+  }
+}
+
+.stagger-item {
+  animation: stagger-in 240ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+@keyframes stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* modal – wejście 200 ms, wyjście 150 ms, origin center (modal, nie popover) */
+.modal-backdrop {
+  opacity: 1;
+  transition: opacity 200ms ease;
+  @starting-style {
+    opacity: 0;
+  }
+}
+.modal-backdrop[data-closing] {
+  opacity: 0;
+  transition-duration: 150ms;
+}
+.modal-panel {
+  opacity: 1;
+  transform: scale(1);
+  transform-origin: center;
+  transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
+  @starting-style {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+.modal-panel[data-closing] {
+  opacity: 0;
+  transform: scale(0.98);
+  transition-duration: 150ms;
+}
+
+/* szuflada z prawej (podgląd na węższych ekranach) */
+.drawer-panel {
+  transform: translateX(0);
+  opacity: 1;
+  transition: transform 300ms var(--ease-drawer), opacity 300ms ease;
+  @starting-style {
+    transform: translateX(100%);
+  }
+}
+.drawer-panel[data-closing] {
+  transform: translateX(100%);
+  transition: transform 200ms var(--ease-out), opacity 200ms ease;
+}
+
+/* toast – wjeżdża z dołu, wyjazd szybszy niż wejście */
+.toast {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition: opacity 300ms ease, transform 300ms ease;
+  @starting-style {
+    opacity: 0;
+    transform: translate(-50%, calc(100% + 24px));
+  }
+}
+.toast[data-closing] {
+  opacity: 0;
+  transform: translate(-50%, calc(100% + 24px));
+  transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
+}
+
+/* wskaźnik aktywnej zakładki – ślizga się pod zakładką (tylko transform) */
+.tab-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 1px;
+  border-radius: 1px;
+  background: var(--color-ink);
+  transform-origin: left center;
+  transition: transform 200ms var(--ease-in-out), opacity 150ms ease;
+  pointer-events: none;
 }
 
 /* ---------- klawiatura */
@@ -63,10 +226,10 @@ input[type="range"] {
   height: var(--u);
   min-width: var(--u);
   border-radius: 0.45rem;
-  border: 1px solid #2c3546;
-  background: linear-gradient(180deg, #1c2331 0%, #141a25 100%);
-  box-shadow: 0 2px 0 #0b0f16, inset 0 1px 0 rgba(255,255,255,0.04);
-  color: #c9d1de;
+  border: 1px solid #d9d9d4;
+  background: linear-gradient(180deg, #ffffff 0%, #f4f4f2 100%);
+  box-shadow: 0 1px 0 #cfcfca, 0 2px 3px rgba(20, 20, 30, 0.04);
+  color: #3a3a41;
   font-size: 0.7rem;
   font-weight: 600;
   line-height: 1;
@@ -77,28 +240,45 @@ input[type="range"] {
   gap: 2px;
   cursor: pointer;
   user-select: none;
-  transition: transform 0.05s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
   overflow: hidden;
   padding: 0 0.15rem;
+  transition:
+    transform 120ms var(--ease-out),
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    color 150ms ease,
+    background-color 150ms ease;
 }
-.keycap:hover { border-color: #3d4a61; background: linear-gradient(180deg, #232c3c 0%, #182030 100%); }
-.keycap:active { transform: translateY(1px); box-shadow: 0 1px 0 #0b0f16; }
+@media (hover: hover) and (pointer: fine) {
+  .keycap:hover:not(.disabled) {
+    border-color: #bdbdb7;
+    background: linear-gradient(180deg, #ffffff 0%, #ececea 100%);
+  }
+  .keycap.bound:hover {
+    background: linear-gradient(180deg, #fff1e6 0%, #ffe0c7 100%);
+  }
+}
+.keycap:active:not(.disabled) {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: 0 0 0 #cfcfca, 0 1px 2px rgba(20, 20, 30, 0.04);
+}
 .keycap.bound {
-  border-color: rgba(245, 165, 36, 0.7);
-  background: linear-gradient(180deg, rgba(245,165,36,0.30) 0%, rgba(245,165,36,0.12) 100%);
-  color: #ffe0a3;
+  border-color: #f3b585;
+  background: linear-gradient(180deg, #fff6ee 0%, #ffe8d3 100%);
+  box-shadow: 0 1px 0 #e9a874, 0 2px 3px rgba(242, 109, 27, 0.08);
+  color: #8f3b02;
 }
 .keycap.selected {
   border-color: var(--color-accent2);
-  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.35), 0 2px 0 #0b0f16;
-  color: #fff;
+  box-shadow: 0 0 0 3px rgba(45, 104, 246, 0.22), 0 1px 0 #cfcfca;
+  color: #1b1b1f;
 }
-.keycap.disabled { opacity: 0.35; cursor: not-allowed; }
+.keycap.disabled { opacity: 0.4; cursor: not-allowed; }
 .keycap.spacer { visibility: hidden; pointer-events: none; border: none; box-shadow: none; background: none; }
-.keycap .sub { font-size: 0.5rem; color: #7c869a; font-weight: 500; }
+.keycap .sub { font-size: 0.5rem; color: #9a9aa2; font-weight: 500; }
 .keycap .cmd {
   font-size: 0.48rem;
-  color: rgba(255, 224, 163, 0.95);
+  color: #a54d0a;
   font-weight: 500;
   font-family: var(--font-mono);
   max-width: 100%;
@@ -122,7 +302,7 @@ input[type="range"] {
 .kb-numpad .keycap.tall { grid-row: span 2; height: auto; }
 .kb-numpad .keycap.wide { grid-column: span 2; }
 
-/* ---------- edytor */
+/* ---------- edytor / podświetlanie cfg */
 .code-editor {
   position: relative;
   display: flex;
@@ -149,7 +329,7 @@ input[type="range"] {
   inset: 0;
   pointer-events: none;
   overflow: hidden;
-  color: #d8dee9;
+  color: #24242a;
 }
 .code-editor textarea {
   position: relative;
@@ -159,31 +339,59 @@ input[type="range"] {
   min-height: 0;
   background: transparent;
   color: transparent;
-  caret-color: #fff;
+  caret-color: #1b1b1f;
   resize: none;
   outline: none;
   overflow: auto;
 }
-.code-editor textarea::selection { background: rgba(34, 211, 238, 0.25); }
+.code-editor textarea::selection { background: rgba(45, 104, 246, 0.18); }
 .code-editor .gutter {
   position: absolute;
   left: 0; top: 0; bottom: 0;
   width: 3rem;
   padding: 0.75rem 0.5rem 0.75rem 0;
   text-align: right;
-  color: #4b5567;
+  color: #a6a6ab;
   border-right: 1px solid var(--color-border);
-  background: var(--color-panel);
+  background: var(--color-panel2);
   user-select: none;
   pointer-events: none;
   overflow: hidden;
+  font-variant-numeric: tabular-nums;
 }
-.tok-c { color: #5b6677; font-style: italic; }
-.tok-s { color: #f5c26b; }
-.tok-k { color: #c084fc; }
-.tok-n { color: #67e8f9; }
-.tok-v { color: #86efac; }
-.tok-key { color: #fca5a5; }
+.cfg-pre {
+  font-family: var(--font-mono);
+  color: #24242a;
+}
+.tok-c { color: #8e8e95; font-style: italic; }
+.tok-s { color: #b45309; }
+.tok-k { color: #6d28d9; }
+.tok-n { color: #1d4ed8; }
+.tok-v { color: #15803d; }
+.tok-key { color: #be123c; }
 
-.fade-in { animation: fadeIn 0.18s ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+/* ---------- reduced motion: zostają zmiany opacity/koloru, znika ruch */
+@media (prefers-reduced-motion: reduce) {
+  .btn:active:not(:disabled),
+  .keycap:active:not(.disabled) {
+    transform: none;
+  }
+  .modal-panel,
+  .drawer-panel,
+  .toast,
+  .pop-in {
+    transition-property: opacity;
+    transform: none !important;
+  }
+  .toast[data-closing],
+  .drawer-panel[data-closing],
+  .modal-panel[data-closing] {
+    opacity: 0;
+  }
+  .stagger-item {
+    animation: none;
+  }
+  .tab-indicator {
+    transition: opacity 150ms ease;
+  }
+}

@@ -1,13 +1,13 @@
 "use client";
 import { useMemo, useState } from "react";
-import { Search, Plus, KeyboardIcon, Copy, Info, ChevronDown } from "lucide-react";
+import { Search, Plus, KeyboardIcon, ChevronDown } from "lucide-react";
 import { useCommands, searchCommands, FLAG_LABEL } from "@/lib/commands";
 import { COMMAND_CATEGORIES } from "@/lib/categorize";
 import { useStore } from "@/lib/store";
 import type { CommandEntry, Visibility } from "@/lib/types";
-import { copyText, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import meta from "@/data/commands.meta.json";
-import { Badge, Button, Card, Input, Select, Toggle } from "../ui/ui";
+import { Badge, Button, Card, CopyButton, Input, PageHeader, Select, Toggle } from "../ui/ui";
 import { KeyPickerModal } from "../binds/KeyPickerModal";
 
 const PAGE = 150;
@@ -40,17 +40,16 @@ export function CommandsTab() {
 
   return (
     <div className="space-y-3">
-      <Card className="p-3">
-        <div className="flex items-start gap-2 text-xs text-muted leading-relaxed">
-          <Info className="h-4 w-4 text-accent2 shrink-0 mt-0.5" />
-          <div>
-            <span className="text-text font-semibold">{meta.count} komend i cvarów CS2</span> – w tym{" "}
-            <span className="text-accent2">{stats.hidden} ukrytych</span> (bez flagi release, nie podpowiadają się w konsoli) i{" "}
-            <span className="text-purple">{stats.dev} dev-only</span> (działają tylko w buildach deweloperskich). Opisy pochodzą z gry (po angielsku).
-            Kliknij nazwę, aby zobaczyć flagi.
-          </div>
-        </div>
-      </Card>
+      <PageHeader
+        title="Komendy"
+        desc={
+          <>
+            <span className="text-text font-medium tnum">{meta.count}</span> komend i cvarów CS2, w tym{" "}
+            <span className="text-accent2 tnum">{stats.hidden} ukrytych</span> (bez flagi release, nie podpowiadają się w konsoli) i{" "}
+            <span className="text-purple tnum">{stats.dev} dev-only</span>. Opisy pochodzą z gry. Kliknij nazwę, aby zobaczyć flagi.
+          </>
+        }
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-2">
         <div className="relative">
@@ -125,9 +124,9 @@ function CommandRow({ e }: { e: CommandEntry }) {
   const bindIt = () => setPick(true);
 
   return (
-    <Card className={cn("px-3 py-2", inCfg && "border-accent/40")}>
+    <Card className={cn("px-3 py-2 transition-colors duration-150 ease hover:border-border3", inCfg && "border-accent/40 bg-accent/[0.035] hover:border-accent/60")}>
       <div className="flex flex-wrap items-center gap-2">
-        <button className="font-mono text-xs text-accent2 hover:underline" onClick={() => setOpen(!open)}>
+        <button className="font-mono text-xs text-accent2 hover:underline underline-offset-2" onClick={() => setOpen(!open)} aria-expanded={open}>
           {e.n}
         </button>
         <Badge tone={e.k === "cvar" ? "gray" : "purple"}>{e.k === "cvar" ? "cvar" : "cmd"}</Badge>
@@ -148,7 +147,7 @@ function CommandRow({ e }: { e: CommandEntry }) {
               <Input className="h-7 w-[110px] font-mono text-[11px]" value={val} onChange={(ev) => setVal(ev.target.value)} placeholder="wartość" />
               <Button
                 size="xs"
-                variant={inCfg ? "default" : "primary"}
+                variant="default"
                 onClick={() => {
                   setCvar(e.n, val);
                   toast(`${e.n} ${val} dodano do cfg`);
@@ -173,16 +172,7 @@ function CommandRow({ e }: { e: CommandEntry }) {
           <Button size="xs" onClick={bindIt} title="Przypisz do klawisza">
             <KeyboardIcon className="h-3 w-3" /> Binduj
           </Button>
-          <button
-            className="text-muted hover:text-text p-1"
-            title="Kopiuj nazwę"
-            onClick={async () => {
-              await copyText(e.n);
-              toast("Skopiowano");
-            }}
-          >
-            <Copy className="h-3.5 w-3.5" />
-          </button>
+          <CopyButton iconOnly text={e.n} title="Kopiuj nazwę" />
         </div>
       </div>
       <KeyPickerModal
@@ -199,7 +189,7 @@ function CommandRow({ e }: { e: CommandEntry }) {
       />
       {e.h && <div className={cn("text-[11px] text-muted mt-1", !open && "line-clamp-2")}>{e.h}</div>}
       {open && (
-        <div className="mt-2 flex flex-wrap gap-1">
+        <div className="pop-in mt-2 flex flex-wrap gap-1">
           {e.f.map((f) => (
             <Badge key={f} tone="gray" title={FLAG_LABEL[f] ?? f}>
               {f}

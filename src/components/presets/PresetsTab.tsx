@@ -5,7 +5,7 @@ import { PRESETS, PRESET_CATEGORIES } from "@/data/presets";
 import { useStore } from "@/lib/store";
 import type { Preset } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Badge, Button, Card, Chip, Input } from "../ui/ui";
+import { Badge, Button, Card, Chip, Input, PageHeader } from "../ui/ui";
 import { KeyPicker } from "../binds/KeyPicker";
 
 export function PresetsTab() {
@@ -22,16 +22,14 @@ export function PresetsTab() {
 
   return (
     <div className="space-y-3">
-      <Card className="p-3">
-        <div className="flex items-start gap-2">
-          <Sparkles className="h-5 w-5 text-accent shrink-0 mt-0.5" />
-          <div className="text-xs text-muted leading-relaxed">
-            <span className="text-text font-semibold">Polecane rzeczy do configu</span> – gotowe zestawy ustawień i bindów, które
-            społeczność najczęściej wrzuca do autoexec. Klikasz „Dodaj” i trafiają do twojego cfg (klawisze możesz zmienić przed dodaniem, a
-            potem w zakładce Bindy).
-          </div>
-        </div>
-      </Card>
+      <PageHeader
+        title={
+          <span className="inline-flex items-center gap-2">
+            Polecane <Sparkles className="h-4 w-4 text-accent" />
+          </span>
+        }
+        desc="Gotowe zestawy ustawień i bindów, które społeczność najczęściej wrzuca do autoexec. Klawisz możesz zmienić przed dodaniem."
+      />
       <div className="flex flex-col md:flex-row gap-2">
         <div className="relative md:w-72">
           <Search className="h-4 w-4 text-muted absolute left-2.5 top-2" />
@@ -91,10 +89,10 @@ function PresetCard({ preset: p }: { preset: Preset }) {
   });
 
   return (
-    <Card className={cn("p-3 flex flex-col", isApplied && "border-ok/40")}>
+    <Card className={cn("p-3.5 flex flex-col transition-colors duration-150 ease", isApplied && "border-ok/40 bg-ok/[0.03]")}>
       <div className="flex items-start justify-between gap-2">
         <div>
-          <div className="text-sm font-semibold flex items-center gap-2 flex-wrap">
+          <div className="text-[13px] font-semibold tracking-tight flex items-center gap-2 flex-wrap">
             {p.title}
             {(p.tags ?? []).map((t) => (
               <Badge key={t} tone={t === "polecane" ? "amber" : t === "mm-safe" ? "green" : t.includes("MM") || t.includes("cheat") ? "red" : "gray"}>
@@ -164,15 +162,10 @@ function PresetCard({ preset: p }: { preset: Preset }) {
           )}
         </div>
         <Button variant={isApplied ? "default" : "primary"} size="xs" onClick={apply}>
-          {isApplied ? (
-            <>
-              <Check className="h-3 w-3" /> Dodane
-            </>
-          ) : (
-            <>
-              <Plus className="h-3 w-3" /> Dodaj do cfg
-            </>
-          )}
+          <span key={isApplied ? "a" : "b"} className="swap">
+            {isApplied ? <Check className="h-3 w-3 text-ok" /> : <Plus className="h-3 w-3" />}
+            {isApplied ? "Dodane" : "Dodaj do cfg"}
+          </span>
         </Button>
       </div>
     </Card>

@@ -5,7 +5,7 @@ import { SETTINGS, SETTING_CATEGORIES } from "@/data/settings";
 import { useStore } from "@/lib/store";
 import type { SettingDef } from "@/lib/types";
 import { cn, normalizeBool } from "@/lib/utils";
-import { Badge, Button, Card, Chip, Input, Select, Toggle } from "../ui/ui";
+import { Badge, Button, Card, Chip, Input, PageHeader, Select, Toggle } from "../ui/ui";
 
 export function SettingsTab() {
   const [cat, setCat] = useState<string>("radar");
@@ -45,12 +45,12 @@ export function SettingsTab() {
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-col md:flex-row md:items-center gap-2">
-        <div className="relative flex-1">
-          <Search className="h-4 w-4 text-muted absolute left-2.5 top-2" />
-          <Input className="pl-8 w-full" placeholder="Szukaj ustawienia (nazwa cvara, opis)…" value={q} onChange={(e) => setQ(e.target.value)} />
-        </div>
+      <PageHeader title="Ustawienia" desc="Najważniejsze cvary CS2 z opisami i polecanymi wartościami. Ustawione trafiają do autoexec.cfg.">
         <Toggle checked={onlyChanged} onChange={setOnlyChanged} label="Tylko ustawione" />
+      </PageHeader>
+      <div className="relative">
+        <Search className="h-4 w-4 text-muted absolute left-2.5 top-2" />
+        <Input className="pl-8 w-full md:max-w-md" placeholder="Szukaj ustawienia (nazwa cvara, opis)…" value={q} onChange={(e) => setQ(e.target.value)} />
       </div>
 
       {!q && (
@@ -60,7 +60,7 @@ export function SettingsTab() {
             return (
               <Chip key={c.id} active={cat === c.id} onClick={() => setCat(c.id)}>
                 {c.label}
-                {n > 0 && <span className="ml-1.5 rounded-full bg-accent/25 px-1.5 text-[10px] text-accent-hi">{n}</span>}
+                {n > 0 && <span className={cn("ml-1.5 rounded-full px-1.5 text-[10px] tnum", cat === c.id ? "bg-white/20 text-white" : "bg-accent/15 text-accent-hi")}>{n}</span>}
               </Chip>
             );
           })}
@@ -114,11 +114,11 @@ function SettingRow({
   const current = value ?? def.default;
 
   return (
-    <Card className={cn("p-3 transition-colors", enabled && "border-accent/40 bg-accent/[0.03]")}>
+    <Card className={cn("p-3 transition-colors duration-150 ease", enabled && "border-accent/40 bg-accent/[0.035]")}>
       <div className="flex flex-col lg:flex-row lg:items-center gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-medium">{def.label}</span>
+            <span className="text-[13px] font-medium">{def.label}</span>
             <code className="font-mono text-[11px] text-accent2">{def.name}</code>
             {def.hidden && (
               <Badge tone="cyan" title="Brak flagi release – nie podpowiada się w konsoli">
@@ -128,12 +128,12 @@ function SettingRow({
             {enabled && <Badge tone="amber">w cfg</Badge>}
           </div>
           {def.desc && <div className="text-xs text-muted mt-0.5">{def.desc}</div>}
-          <div className="text-[11px] text-muted/80 mt-0.5 font-mono">
+          <div className="text-[11px] text-muted/80 mt-0.5 font-mono tnum">
             domyślnie: {def.default === "" ? '""' : def.default}
             {def.recommended !== undefined && (
               <>
                 {" · "}
-                <button className="text-accent hover:underline" onClick={() => onChange(def.recommended!)} title="Ustaw polecaną wartość">
+                <button className="text-accent-hi hover:underline underline-offset-2" onClick={() => onChange(def.recommended!)} title="Ustaw polecaną wartość">
                   polecane: {def.recommended}
                 </button>
               </>

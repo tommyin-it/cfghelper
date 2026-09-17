@@ -1,8 +1,6 @@
 "use client";
-import { Copy, FolderOpen, Rocket, CircleHelp, Terminal } from "lucide-react";
-import { useStore } from "@/lib/store";
-import { copyText } from "@/lib/utils";
-import { Button, Card, Code, Kbd, SectionTitle } from "../ui/ui";
+import { FolderOpen, Rocket, CircleHelp, Terminal } from "lucide-react";
+import { Card, Code, CopyButton, Kbd, PageHeader, SectionTitle } from "../ui/ui";
 
 const PATHS = [
   { os: "Windows", path: "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\game\\csgo\\cfg\\autoexec.cfg" },
@@ -13,13 +11,9 @@ const PATHS = [
 const LAUNCH = "-console -fullscreen -high -nojoy +exec autoexec.cfg";
 
 export function HelpTab() {
-  const toast = useStore((s) => s.toast);
-  const copy = async (t: string) => {
-    await copyText(t);
-    toast("Skopiowano");
-  };
   return (
     <div className="space-y-3 max-w-4xl">
+      <PageHeader title="Instalacja" desc="Gdzie wgrać autoexec.cfg, jakie opcje uruchamiania ustawić i jak sprawdzić, czy config działa." />
       <Card className="p-4">
         <SectionTitle>
           <span className="inline-flex items-center gap-1.5">
@@ -40,9 +34,7 @@ export function HelpTab() {
             <div key={p.os} className="flex items-center gap-2 rounded-md border border-border bg-panel2 px-2 py-1.5">
               <span className="text-[11px] font-semibold text-muted w-16 shrink-0">{p.os}</span>
               <code className="font-mono text-[11px] text-text flex-1 break-all">{p.path}</code>
-              <button className="text-muted hover:text-text" onClick={() => copy(p.path)} title="Kopiuj ścieżkę">
-                <Copy className="h-3.5 w-3.5" />
-              </button>
+              <CopyButton iconOnly text={p.path} title="Kopiuj ścieżkę" />
             </div>
           ))}
         </div>
@@ -61,11 +53,9 @@ export function HelpTab() {
           CS2 wczytuje <Code>autoexec.cfg</Code> automatycznie, ale dla pewności dodaj <Code>+exec autoexec.cfg</Code> w Steam → CS2 → Właściwości →
           Opcje uruchamiania:
         </p>
-        <div className="mt-2 flex items-center gap-2 rounded-md border border-border bg-bg px-3 py-2">
-          <code className="font-mono text-xs text-accent-hi flex-1">{LAUNCH}</code>
-          <Button size="xs" onClick={() => copy(LAUNCH)}>
-            <Copy className="h-3 w-3" /> Kopiuj
-          </Button>
+        <div className="mt-2 flex items-center gap-2 rounded-md border border-border bg-panel2 px-3 py-2">
+          <code className="font-mono text-xs text-text flex-1">{LAUNCH}</code>
+          <CopyButton size="xs" text={LAUNCH} />
         </div>
         <ul className="text-xs text-muted mt-3 space-y-1 list-disc pl-5">
           <li>

@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FilePlus2, Upload, Download, Copy, Trash2, Pencil, Import, RefreshCw, FileCode2, Check, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { FilePlus2, Upload, Download, Trash2, Pencil, Import, RefreshCw, FileCode2, Check, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { parseCfg } from "@/lib/parse";
-import { copyText, downloadText, formatDate, cn } from "@/lib/utils";
-import { Button, Card, SectionTitle, Badge } from "../ui/ui";
+import { downloadText, formatDate, cn } from "@/lib/utils";
+import { Button, Card, CopyButton, SectionTitle, Badge } from "../ui/ui";
 import { CodeEditor } from "./CodeEditor";
 import { useCfgText } from "../PreviewPanel";
 
@@ -100,7 +100,7 @@ export function EditorTab() {
     <div className={cn("grid grid-cols-1 gap-3", filesOpen ? "lg:grid-cols-[230px_minmax(0,1fr)]" : "lg:grid-cols-[44px_minmax(0,1fr)]")}>
       {!filesOpen && (
         <Card className="hidden lg:flex flex-col items-center py-2 gap-2">
-          <button className="text-muted hover:text-text" title="Pokaż pliki" onClick={() => setFilesOpen(true)}>
+          <button className="btn rounded-md p-1 text-muted hover:text-text hover:bg-panel3" title="Pokaż pliki" onClick={() => setFilesOpen(true)}>
             <PanelLeftOpen className="h-4 w-4" />
           </button>
           <div className="text-[10px] text-muted [writing-mode:vertical-rl] rotate-180">
@@ -111,7 +111,7 @@ export function EditorTab() {
       <Card className={cn("p-3", !filesOpen && "lg:hidden")}>
         <SectionTitle
           right={
-            <button className="hidden lg:block text-muted hover:text-text" title="Zwiń panel plików" onClick={() => setFilesOpen(false)}>
+            <button className="btn hidden lg:block rounded-md p-1 text-muted hover:text-text hover:bg-panel3" title="Zwiń panel plików" onClick={() => setFilesOpen(false)}>
               <PanelLeftClose className="h-4 w-4" />
             </button>
           }
@@ -137,8 +137,8 @@ export function EditorTab() {
               key={f.id}
               onClick={() => setActiveFile(f.id)}
               className={cn(
-                "w-full text-left rounded-md border px-2 py-1.5 transition-colors",
-                active?.id === f.id ? "border-accent/60 bg-accent/10" : "border-border bg-panel2 hover:border-[#3d4a61]",
+                "btn w-full text-left rounded-md border px-2 py-1.5",
+                active?.id === f.id ? "border-accent/50 bg-accent/[0.06]" : "border-border bg-panel2 hover:border-border3",
               )}
             >
               <div className="text-xs font-medium truncate">{f.name}</div>
@@ -171,10 +171,10 @@ export function EditorTab() {
         ) : (
           <>
             <div className="flex flex-wrap items-center gap-2 mb-2">
-              <button className="text-sm font-semibold inline-flex items-center gap-1.5 hover:text-accent-hi" onClick={rename} title="Zmień nazwę">
+              <button className="text-[13px] font-semibold tracking-tight inline-flex items-center gap-1.5 hover:text-accent-hi transition-colors duration-150" onClick={rename} title="Zmień nazwę">
                 {active.name} <Pencil className="h-3 w-3 text-muted" />
               </button>
-              <Badge tone={saved ? "green" : "amber"}>{saved ? "zapisano" : "zapisywanie…"}</Badge>
+              <span key={saved ? "s" : "u"} className="swap"><Badge tone={saved ? "green" : "amber"}>{saved ? "zapisano" : "zapisywanie…"}</Badge></span>
               <div className="flex-1" />
               <Button size="xs" onClick={() => { onChange(generated); toast("Wstawiono wygenerowany cfg"); }} title="Zastąp treść aktualnym wygenerowanym cfg">
                 <RefreshCw className="h-3 w-3" /> Wstaw z generatora
@@ -185,9 +185,7 @@ export function EditorTab() {
               <Button size="xs" onClick={() => importToGenerator("replace")} title="Zastąp config w generatorze zawartością tego pliku">
                 <Import className="h-3 w-3" /> Do generatora (zastąp)
               </Button>
-              <Button size="xs" onClick={async () => { await copyText(draft); toast("Skopiowano"); }}>
-                <Copy className="h-3 w-3" /> Kopiuj
-              </Button>
+              <CopyButton size="xs" text={() => draft} />
               <Button size="xs" variant="primary" onClick={() => downloadText(active.name, draft)}>
                 <Download className="h-3 w-3" /> Pobierz
               </Button>

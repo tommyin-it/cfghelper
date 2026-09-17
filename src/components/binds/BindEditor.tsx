@@ -1,14 +1,14 @@
 "use client";
 import { useMemo, useState } from "react";
-import { Check, Trash2, Plus, Search, Copy } from "lucide-react";
+import { Check, Trash2, Plus, Search } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { ACTIONS, ACTION_GROUPS } from "@/data/actions";
 import { WEAPONS, WEAPON_GROUPS, buyCost } from "@/data/weapons";
 import { keyLabel } from "@/data/keys";
 import { useCommands, searchCommands } from "@/lib/commands";
 import { bindLine } from "@/lib/generate";
-import { cn, copyText } from "@/lib/utils";
-import { Badge, Button, Card, Chip, Input, SectionTitle, Kbd, Toggle } from "../ui/ui";
+import { cn } from "@/lib/utils";
+import { Badge, Button, Card, Chip, CopyButton, Input, SectionTitle, Kbd, Toggle } from "../ui/ui";
 import { KeyPicker } from "./KeyPicker";
 
 type Mode = "actions" | "buy" | "commands" | "custom";
@@ -133,15 +133,7 @@ export function BindEditor() {
       <div className="flex items-center justify-between mb-2">
         <Toggle checked={append} onChange={setAppend} label="Dopisuj do istniejącej (średnik)" />
         {draft.trim() && (
-          <button
-            className="text-[11px] text-muted hover:text-text inline-flex items-center gap-1"
-            onClick={async () => {
-              await copyText(bindLine(selectedKey, draft.trim()));
-              toast("Skopiowano linię bind");
-            }}
-          >
-            <Copy className="h-3 w-3" /> kopiuj linię
-          </button>
+          <CopyButton size="xs" variant="ghost" text={() => bindLine(selectedKey, draft.trim())} label="kopiuj linię" doneLabel="skopiowano" />
         )}
       </div>
 
@@ -158,8 +150,8 @@ export function BindEditor() {
             key={m}
             onClick={() => setMode(m)}
             className={cn(
-              "px-3 h-8 text-xs border-b-2 -mb-px transition-colors",
-              mode === m ? "border-accent text-accent-hi" : "border-transparent text-muted hover:text-text",
+              "btn rounded-none px-3 h-8 text-xs border-b-2 -mb-px",
+              mode === m ? "border-ink text-text" : "border-transparent text-muted hover:text-text",
             )}
           >
             {label}
@@ -182,7 +174,7 @@ export function BindEditor() {
                 key={a.command}
                 onClick={() => put(a.command)}
                 className={cn(
-                  "text-left rounded-md border border-border bg-panel2 px-2 py-1.5 hover:border-accent/50 hover:bg-panel3 transition-colors",
+                  "btn text-left rounded-md border border-border bg-panel2 px-2 py-1.5 hover:border-border3 hover:bg-panel3",
                   draft.trim() === a.command && "border-accent/60 bg-accent/10",
                 )}
                 title={a.desc}
@@ -215,8 +207,8 @@ export function BindEditor() {
                         key={w.buy}
                         onClick={() => setBuySel(on ? buySel.filter((b) => b !== w.buy) : [...buySel, w.buy])}
                         className={cn(
-                          "rounded-md border px-2 py-1 text-[11px] transition-colors",
-                          on ? "border-accent bg-accent/15 text-accent-hi" : "border-border bg-panel2 text-text hover:border-[#3d4a61]",
+                          "btn rounded-md border px-2 py-1 text-[11px]",
+                          on ? "border-accent bg-accent/15 text-accent-hi" : "border-border bg-panel2 text-text hover:border-border3",
                         )}
                         title={`buy ${w.buy} · $${w.price}`}
                       >
