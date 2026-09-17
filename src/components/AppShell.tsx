@@ -79,7 +79,10 @@ export function AppShell() {
           </nav>
           <button
             onClick={() => setPreviewOpen(true)}
-            className="xl:hidden flex items-center gap-1.5 h-9 px-3 rounded-md text-xs font-medium bg-panel2 border border-border2 text-text"
+            className={cn(
+              "flex items-center gap-1.5 h-9 px-3 rounded-md text-xs font-medium bg-panel2 border border-border2 text-text",
+              tab !== "editor" && "xl:hidden",
+            )}
           >
             <FileText className="h-4 w-4" /> <span className="hidden sm:inline">Podgląd cfg</span>
           </button>
@@ -90,7 +93,12 @@ export function AppShell() {
         {!hydrated ? (
           <div className="text-muted text-sm py-20 text-center">Ładowanie…</div>
         ) : (
-          <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_400px] 2xl:grid-cols-[minmax(0,1fr)_460px] gap-4">
+          <div
+            className={cn(
+              "grid grid-cols-1 gap-4",
+              tab !== "editor" && "xl:grid-cols-[minmax(0,1fr)_400px] 2xl:grid-cols-[minmax(0,1fr)_460px]",
+            )}
+          >
             <div className="min-w-0 fade-in" key={tab}>
               {tab === "settings" && <SettingsTab />}
               {tab === "binds" && <BindsTab />}
@@ -99,17 +107,19 @@ export function AppShell() {
               {tab === "editor" && <EditorTab />}
               {tab === "help" && <HelpTab />}
             </div>
-            <aside className="hidden xl:block">
-              <div className="sticky top-[4.5rem] max-h-[calc(100vh-5.5rem)] overflow-y-auto pr-1">
-                <PreviewPanel />
-              </div>
-            </aside>
+            {tab !== "editor" && (
+              <aside className="hidden xl:block">
+                <div className="sticky top-[4.5rem] max-h-[calc(100vh-5.5rem)] overflow-y-auto pr-1">
+                  <PreviewPanel />
+                </div>
+              </aside>
+            )}
           </div>
         )}
       </main>
 
       {previewOpen && (
-        <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm xl:hidden" onClick={() => setPreviewOpen(false)}>
+        <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={() => setPreviewOpen(false)}>
           <div
             className="absolute right-0 top-0 h-full w-full max-w-[520px] bg-bg border-l border-border overflow-y-auto p-3"
             onClick={(e) => e.stopPropagation()}

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FilePlus2, Upload, Download, Copy, Trash2, Pencil, Import, RefreshCw, FileCode2, Check } from "lucide-react";
+import { FilePlus2, Upload, Download, Copy, Trash2, Pencil, Import, RefreshCw, FileCode2, Check, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { parseCfg } from "@/lib/parse";
 import { copyText, downloadText, formatDate, cn } from "@/lib/utils";
@@ -23,6 +23,7 @@ export function EditorTab() {
   const active = useMemo(() => files.find((f) => f.id === activeFileId) ?? files[0] ?? null, [files, activeFileId]);
   const [draft, setDraft] = useState(active?.content ?? "");
   const [saved, setSaved] = useState(true);
+  const [filesOpen, setFilesOpen] = useState(true);
   const fileInput = useRef<HTMLInputElement>(null);
   const activeIdRef = useRef<string | null>(active?.id ?? null);
 
@@ -96,9 +97,27 @@ export function EditorTab() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)] gap-3">
-      <Card className="p-3">
-        <SectionTitle>Pliki</SectionTitle>
+    <div className={cn("grid grid-cols-1 gap-3", filesOpen ? "lg:grid-cols-[230px_minmax(0,1fr)]" : "lg:grid-cols-[44px_minmax(0,1fr)]")}>
+      {!filesOpen && (
+        <Card className="hidden lg:flex flex-col items-center py-2 gap-2">
+          <button className="text-muted hover:text-text" title="Pokaż pliki" onClick={() => setFilesOpen(true)}>
+            <PanelLeftOpen className="h-4 w-4" />
+          </button>
+          <div className="text-[10px] text-muted [writing-mode:vertical-rl] rotate-180">
+            Pliki ({files.length})
+          </div>
+        </Card>
+      )}
+      <Card className={cn("p-3", !filesOpen && "lg:hidden")}>
+        <SectionTitle
+          right={
+            <button className="hidden lg:block text-muted hover:text-text" title="Zwiń panel plików" onClick={() => setFilesOpen(false)}>
+              <PanelLeftClose className="h-4 w-4" />
+            </button>
+          }
+        >
+          Pliki
+        </SectionTitle>
         <div className="flex flex-col gap-1.5 mb-3">
           <Button onClick={() => newFile()} className="justify-start">
             <FilePlus2 className="h-3.5 w-3.5" /> Nowy pusty plik
@@ -135,9 +154,20 @@ export function EditorTab() {
         </div>
       </Card>
 
-      <Card className="p-3 flex flex-col min-h-[70vh]">
+      <Card className="p-3 flex flex-col h-[calc(100vh-7.5rem)] min-h-[480px]">
         {!active ? (
-          <div className="flex-1 flex items-center justify-center text-sm text-muted">Utwórz lub wczytaj plik, aby edytować.</div>
+          <div className="flex-1 flex flex-col items-center justify-center gap-3 text-sm text-muted">
+            <FileCode2 className="h-8 w-8 opacity-40" />
+            Utwórz lub wczytaj plik, aby edytować.
+            <div className="flex gap-2">
+              <Button size="sm" variant="primary" onClick={() => newFile(generated, "autoexec.cfg")}>
+                <FileCode2 className="h-3.5 w-3.5" /> Nowy z generatora
+              </Button>
+              <Button size="sm" onClick={() => newFile()}>
+                <FilePlus2 className="h-3.5 w-3.5" /> Pusty plik
+              </Button>
+            </div>
+          </div>
         ) : (
           <>
             <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -174,8 +204,8 @@ export function EditorTab() {
                 <Trash2 className="h-3 w-3" />
               </Button>
             </div>
-            <div className="flex-1 min-h-[55vh]">
-              <CodeEditor value={draft} onChange={onChange} className="h-full min-h-[55vh]" placeholder="// wpisz komendy cfg…" />
+            <div className="flex-1 min-h-0">
+              <CodeEditor value={draft} onChange={onChange} className="h-full" placeholder="// wpisz komendy cfg…" />
             </div>
             <div className="text-[11px] text-muted mt-2 flex items-center gap-1">
               <Check className="h-3 w-3" /> {draft.split("\n").length} linii · {draft.length} znaków · Tab wstawia tabulator

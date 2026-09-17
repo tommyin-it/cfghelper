@@ -7,6 +7,8 @@ interface Props {
   binds: Record<string, string>;
   selected: string | null;
   onSelect: (key: string) => void;
+  /** mniejsze klawisze (np. w oknie wyboru klawisza) */
+  compact?: boolean;
 }
 
 function KeyCap({ k, bind, selected, onSelect, extraClass }: { k: KeyDef; bind?: string; selected: boolean; onSelect: (id: string) => void; extraClass?: string }) {
@@ -30,7 +32,7 @@ function KeyCap({ k, bind, selected, onSelect, extraClass }: { k: KeyDef; bind?:
   );
 }
 
-export function Keyboard({ binds, selected, onSelect }: Props) {
+export function Keyboard({ binds, selected, onSelect, compact }: Props) {
   const row = (keys: KeyDef[], i: number) => (
     <div className="kb-row" key={i}>
       {keys.map((k, j) => (
@@ -40,7 +42,7 @@ export function Keyboard({ binds, selected, onSelect }: Props) {
   );
 
   return (
-    <div className="kb overflow-x-auto pb-2">
+    <div className={cn("kb overflow-x-auto pb-2", compact && "kb-compact")}>
       <div className="flex flex-wrap gap-x-5 gap-y-3 items-start">
         <div>
           {row(FN_ROW, -1)}

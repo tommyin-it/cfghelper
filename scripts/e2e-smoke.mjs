@@ -90,11 +90,51 @@ const log = (ok, msg) => { results.push([ok, msg]); console.log(`${ok ? "PASS" :
   await page.fill("input[placeholder^='Szukaj: np. radar']", "toggleradarscale");
   await page.waitForTimeout(400);
   await page.click("button:has-text('Binduj')");
-  await page.waitForSelector("text=Wybierz klawisz dla:");
-  await page.click(".keycap[title='kp_minus']");
+  await page.waitForSelector("[role=dialog] .keycap");
+  await page.click("[role=dialog] .keycap[title='kp_minus']");
   await page.waitForTimeout(300);
   const preview6 = await page.textContent("aside pre");
-  log(preview6.includes('bind "kp_minus" "toggleradarscale"'), "binduj z zakładki Komendy → kp_minus");
+  log(preview6.includes('bind "kp_minus" "toggleradarscale"'), "binduj z zakładki Komendy → okno wyboru → kp_minus");
+  // okno wyboru klawisza: fizyczny klawisz + kółko + przycisk myszy
+  await page.fill("input[placeholder^='Szukaj: np. radar']", "switchhands");
+  await page.waitForTimeout(400);
+  await page.click("button:has-text('Binduj')");
+  await page.waitForSelector("[role=dialog]");
+  await page.keyboard.press("F8");
+  await page.waitForTimeout(300);
+  log((await page.textContent("aside pre")).includes('bind "f8" "switchhands"'), "okno wyboru: fizyczny klawisz F8");
+  await page.click("button:has-text('Binduj')");
+  await page.waitForSelector("[data-testid=key-capture-zone]");
+  const zone = await page.locator("[data-testid=key-capture-zone]").boundingBox();
+  await page.mouse.move(zone.x + zone.width / 2, zone.y + zone.height / 2);
+  await page.mouse.wheel(0, -120);
+  await page.waitForTimeout(300);
+  log((await page.textContent("aside pre")).includes('bind "mwheelup" "switchhands"'), "okno wyboru: kółko w górę w strefie");
+  await page.click("button:has-text('Binduj')");
+  await page.waitForSelector("[data-testid=key-capture-zone]");
+  await page.click("[data-testid=key-capture-zone]", { button: "right" });
+  await page.waitForTimeout(300);
+  log((await page.textContent("aside pre")).includes('bind "mouse2" "switchhands"'), "okno wyboru: PPM w strefie → mouse2");
+  // presety: zmiana sugerowanego klawisza przez okno
+  await page.click("nav button:has-text('Polecane')");
+  const zoomCard = page.locator("div.rounded-lg", { hasText: "Zoom radaru na klawiszach" }).first();
+  await zoomCard.locator("[data-testid=key-picker]").first().click();
+  await page.waitForSelector("[role=dialog] .keycap");
+  await page.click("[role=dialog] .keycap[title='f7']");
+  await page.waitForTimeout(200);
+  const pickerText = await zoomCard.locator("[data-testid=key-picker]").first().textContent();
+  log(pickerText.trim() === "f7", `preset: klawisz zmieniony na ${pickerText.trim()}`);
+  await zoomCard.locator("button", { hasText: "Dodaj do cfg" }).click();
+  await page.waitForTimeout(300);
+  log((await page.textContent("aside pre")).includes('bind "f7" "incrementvar cl_radar_scale 0.25 1.0 -0.05"'), "preset dodany z własnym klawiszem f7");
+  // lista bindów: przeniesienie binda na inny klawisz
+  await page.click("nav button:has-text('Bindy')");
+  const row = page.locator("div.group", { hasText: "switchhands" }).first();
+  await row.locator("[data-testid=key-picker]").click();
+  await page.waitForSelector("[role=dialog] .keycap");
+  await page.click("[role=dialog] .keycap[title='f11']");
+  await page.waitForTimeout(300);
+  log((await page.textContent("aside pre")).includes('bind "f11" "switchhands"'), "lista bindów: przeniesienie na f11");
   // edytor
   await page.click("nav button:has-text('Edytor')");
   page.once("dialog", (d) => d.accept("test.cfg"));
@@ -109,8 +149,15 @@ const log = (ok, msg) => { results.push([ok, msg]); console.log(`${ok ? "PASS" :
   page.once("dialog", (d) => d.accept());
   await page.click("button:has-text('Do generatora (dopisz)')");
   await page.waitForTimeout(400);
+  await page.click("nav button:has-text('Ustawienia')");
+  await page.waitForTimeout(300);
   const preview7 = await page.textContent("aside pre");
   log(preview7.includes('bind "f9" "say gg"') && preview7.includes('sensitivity "2.2"'), "import z edytora do generatora");
+  await page.click("nav button:has-text('Edytor')");
+  await page.waitForTimeout(300);
+  const edH = await page.$eval(".code-editor", (e) => e.getBoundingClientRect().height);
+  const noAside = (await page.$("aside")) === null;
+  log(edH > 700 && noAside, `edytor: wysokość ${Math.round(edH)}px, panel podglądu ukryty=${noAside}`);
   // reload → persist
   await page.reload();
   await page.waitForTimeout(800);

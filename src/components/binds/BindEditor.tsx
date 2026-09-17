@@ -9,6 +9,7 @@ import { useCommands, searchCommands } from "@/lib/commands";
 import { bindLine } from "@/lib/generate";
 import { cn, copyText } from "@/lib/utils";
 import { Badge, Button, Card, Chip, Input, SectionTitle, Kbd, Toggle } from "../ui/ui";
+import { KeyPicker } from "./KeyPicker";
 
 type Mode = "actions" | "buy" | "commands" | "custom";
 
@@ -17,6 +18,7 @@ export function BindEditor() {
   const binds = useStore((s) => s.binds);
   const setBind = useStore((s) => s.setBind);
   const removeBind = useStore((s) => s.removeBind);
+  const renameBindKey = useStore((s) => s.renameBindKey);
   const selectKey = useStore((s) => s.selectKey);
   const toast = useStore((s) => s.toast);
 
@@ -85,9 +87,25 @@ export function BindEditor() {
     <Card className="p-3">
       <SectionTitle
         right={
-          <Button size="xs" variant="ghost" onClick={() => selectKey(null)}>
-            Zamknij
-          </Button>
+          <div className="flex items-center gap-1.5">
+            <KeyPicker
+              value={selectedKey}
+              binds={binds}
+              command={current || undefined}
+              title="Zmień klawisz"
+              onChange={(k) => {
+                if (k === selectedKey) return;
+                if (current) {
+                  renameBindKey(selectedKey, k);
+                  toast(`Przeniesiono bind ${selectedKey} → ${k}`);
+                }
+                selectKey(k);
+              }}
+            />
+            <Button size="xs" variant="ghost" onClick={() => selectKey(null)}>
+              Zamknij
+            </Button>
+          </div>
         }
       >
         <span className="inline-flex items-center gap-2">

@@ -8,6 +8,7 @@ import type { CommandEntry, Visibility } from "@/lib/types";
 import { copyText, cn } from "@/lib/utils";
 import meta from "@/data/commands.meta.json";
 import { Badge, Button, Card, Input, Select, Toggle } from "../ui/ui";
+import { KeyPickerModal } from "../binds/KeyPickerModal";
 
 const PAGE = 150;
 
@@ -112,20 +113,16 @@ function CommandRow({ e }: { e: CommandEntry }) {
   const cvars = useStore((s) => s.cvars);
   const setCvar = useStore((s) => s.setCvar);
   const addCustom = useStore((s) => s.addCustom);
-  const setPendingCommand = useStore((s) => s.setPendingCommand);
-  const selectKey = useStore((s) => s.selectKey);
-  const setTab = useStore((s) => s.setTab);
+  const binds = useStore((s) => s.binds);
+  const setBind = useStore((s) => s.setBind);
   const toast = useStore((s) => s.toast);
   const [open, setOpen] = useState(false);
+  const [pick, setPick] = useState(false);
   const [val, setVal] = useState(cvars[e.n] ?? e.d ?? "");
   const inCfg = cvars[e.n] !== undefined;
   const isCheat = e.f.includes("cheat");
 
-  const bindIt = () => {
-    setPendingCommand(e.n);
-    selectKey(null);
-    setTab("binds");
-  };
+  const bindIt = () => setPick(true);
 
   return (
     <Card className={cn("px-3 py-2", inCfg && "border-accent/40")}>
@@ -188,6 +185,18 @@ function CommandRow({ e }: { e: CommandEntry }) {
           </button>
         </div>
       </div>
+      <KeyPickerModal
+        open={pick}
+        binds={binds}
+        command={e.n}
+        title={`Wybierz klawisz dla: ${e.n}`}
+        onSelect={(k) => {
+          setBind(k, e.n);
+          setPick(false);
+          toast(`Zbindowano ${e.n} → ${k}`);
+        }}
+        onClose={() => setPick(false)}
+      />
       {e.h && <div className={cn("text-[11px] text-muted mt-1", !open && "line-clamp-2")}>{e.h}</div>}
       {open && (
         <div className="mt-2 flex flex-wrap gap-1">

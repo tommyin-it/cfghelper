@@ -2,11 +2,11 @@
 import { useMemo, useState } from "react";
 import { Plus, Check, TriangleAlert, Sparkles, Search } from "lucide-react";
 import { PRESETS, PRESET_CATEGORIES } from "@/data/presets";
-import { BINDABLE_KEY_IDS } from "@/data/keys";
 import { useStore } from "@/lib/store";
 import type { Preset } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Badge, Button, Card, Chip, Input, Select } from "../ui/ui";
+import { Badge, Button, Card, Chip, Input } from "../ui/ui";
+import { KeyPicker } from "../binds/KeyPicker";
 
 export function PresetsTab() {
   const [cat, setCat] = useState<string>("all");
@@ -125,19 +125,14 @@ function PresetCard({ preset: p }: { preset: Preset }) {
           const taken = key && binds[key] && binds[key] !== b.command;
           return (
             <div key={i} className="flex items-center gap-2">
-              <Select
-                className="h-6 w-[110px] text-[11px] font-mono px-1"
-                value={key}
-                onChange={(e) => setKeys({ ...keys, [i]: e.target.value })}
-              >
-                <option value="">– klawisz –</option>
-                {BINDABLE_KEY_IDS.map((k) => (
-                  <option key={k} value={k}>
-                    {k}
-                    {binds[k] && binds[k] !== b.command ? " (zajęty)" : ""}
-                  </option>
-                ))}
-              </Select>
+              <KeyPicker
+                value={key || null}
+                onChange={(k) => setKeys({ ...keys, [i]: k })}
+                binds={binds}
+                command={b.command}
+                title={`Klawisz dla: ${b.label}`}
+                className="w-[110px] justify-center"
+              />
               <span className="text-text truncate" title={b.command}>
                 {b.command}
               </span>

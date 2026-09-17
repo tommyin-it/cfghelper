@@ -20,8 +20,6 @@ export interface PresetLike {
 interface UIState {
   tab: TabId;
   selectedKey: string | null;
-  /** komenda czekająca na przypisanie do klawisza (z zakładki Komendy) */
-  pendingCommand: string | null;
   capture: boolean;
   toast: ToastMsg | null;
   showHidden: boolean;
@@ -58,7 +56,6 @@ export interface Store extends CfgData {
 
   setTab: (tab: TabId) => void;
   selectKey: (key: string | null) => void;
-  setPendingCommand: (cmd: string | null) => void;
   setCapture: (on: boolean) => void;
   toast: (text: string, kind?: ToastMsg["kind"]) => void;
   clearToast: () => void;
@@ -80,7 +77,6 @@ export const useStore = create<Store>()(
       ui: {
         tab: "settings",
         selectedKey: null,
-        pendingCommand: null,
         capture: false,
         toast: null,
         showHidden: true,
@@ -182,7 +178,6 @@ export const useStore = create<Store>()(
 
       setTab: (tab) => set((s) => ({ ui: { ...s.ui, tab } })),
       selectKey: (key) => set((s) => ({ ui: { ...s.ui, selectedKey: key, capture: false } })),
-      setPendingCommand: (cmd) => set((s) => ({ ui: { ...s.ui, pendingCommand: cmd } })),
       setCapture: (on) => set((s) => ({ ui: { ...s.ui, capture: on } })),
       toast: (text, kind = "ok") => {
         const id = uid();

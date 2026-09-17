@@ -1,11 +1,12 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { Crosshair, Trash2, Copy, Pencil, X, KeyboardIcon } from "lucide-react";
+import { Crosshair, Trash2, Copy, Pencil, KeyboardIcon } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { CODE_TO_KEY, keyFromMouseButton, keyLabel, BINDABLE_KEY_IDS, KEY_BY_ID } from "@/data/keys";
+import { CODE_TO_KEY, keyFromMouseButton, keyLabel, KEY_BY_ID } from "@/data/keys";
 import { bindLine } from "@/lib/generate";
 import { copyText } from "@/lib/utils";
-import { Button, Card, SectionTitle, Kbd, Select } from "../ui/ui";
+import { Button, Card, SectionTitle, Kbd } from "../ui/ui";
+import { KeyPicker } from "./KeyPicker";
 import { Keyboard } from "./Keyboard";
 import { BindEditor } from "./BindEditor";
 
@@ -15,9 +16,6 @@ export function BindsTab() {
   const selectKey = useStore((s) => s.selectKey);
   const capture = useStore((s) => s.ui.capture);
   const setCapture = useStore((s) => s.setCapture);
-  const pending = useStore((s) => s.ui.pendingCommand);
-  const setPending = useStore((s) => s.setPendingCommand);
-  const setBind = useStore((s) => s.setBind);
   const removeBind = useStore((s) => s.removeBind);
   const renameBindKey = useStore((s) => s.renameBindKey);
   const toast = useStore((s) => s.toast);
@@ -68,15 +66,6 @@ export function BindsTab() {
     };
   }, [capture, selectKey, setCapture, toast]);
 
-  // Komenda czekająca z zakładki Komendy → przypisz po wyborze klawisza
-  useEffect(() => {
-    if (pending && selectedKey) {
-      setBind(selectedKey, pending);
-      toast(`Zbindowano ${pending} → ${selectedKey}`);
-      setPending(null);
-    }
-  }, [pending, selectedKey, setBind, setPending, toast]);
-
   const bindList = useMemo(
     () =>
       Object.entries(binds)
@@ -87,17 +76,6 @@ export function BindsTab() {
 
   return (
     <div className="space-y-3">
-      {pending && (
-        <Card className="p-3 border-accent2/50 bg-accent2/5 flex items-center justify-between gap-3">
-          <div className="text-sm">
-            Wybierz klawisz dla: <code className="font-mono text-accent2">{pending}</code>
-          </div>
-          <Button size="xs" variant="ghost" onClick={() => setPending(null)}>
-            <X className="h-3.5 w-3.5" /> Anuluj
-          </Button>
-        </Card>
-      )}
-
       <Card className="p-3">
         <SectionTitle
           right={
@@ -141,19 +119,19 @@ export function BindsTab() {
             <div className="space-y-1 max-h-[480px] overflow-y-auto pr-1">
               {bindList.map(([key, cmd]) => (
                 <div key={key} className="flex items-center gap-2 rounded-md border border-border bg-panel2 px-2 py-1.5 text-xs group">
-                  <Select
-                    className="h-7 w-[120px] font-mono text-[11px]"
+                  <KeyPicker
                     value={key}
-                    onChange={(e) => renameBindKey(key, e.target.value)}
-                    title="Zmień klawisz"
-                  >
-                    {!BINDABLE_KEY_IDS.includes(key) && <option value={key}>{key}</option>}
-                    {BINDABLE_KEY_IDS.map((k) => (
-                      <option key={k} value={k} disabled={k !== key && !!binds[k]}>
-                        {k} {k !== key && binds[k] ? "(zajęty)" : ""}
-                      </option>
-                    ))}
-                  </Select>
+                    onChange={(k) => {
+                      if (k !== key) {
+                        renameBindKey(key, k);
+                        toast(`Przeniesiono bind ${key} → ${k}`);
+                      }
+                    }}
+                    binds={binds}
+                    command={cmd}
+                    title={`Przenieś bind z ${key}`}
+                    className="w-[120px] justify-center h-7"
+                  />
                   <code className="flex-1 font-mono text-[11px] text-accent-hi truncate" title={cmd}>
                     {cmd}
                   </code>
