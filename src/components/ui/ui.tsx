@@ -9,17 +9,27 @@ type Size = "xs" | "sm" | "md";
 export function Button({
   variant = "default",
   size = "sm",
+  icon,
+  isStatic,
   className,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant; size?: Size }) {
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: Variant;
+  size?: Size;
+  /** przycisk zaczyna się ikoną – padding po stronie ikony o 2px mniejszy (wyrównanie optyczne) */
+  icon?: boolean;
+  /** bez skalowania przy wciśnięciu */
+  isStatic?: boolean;
+}) {
   return (
     <button
       className={cn(
         "btn inline-flex items-center justify-center gap-1.5 rounded-md border font-medium whitespace-nowrap select-none",
         "disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none",
-        size === "xs" && "h-7 px-2 text-[11.5px]",
-        size === "sm" && "h-8 px-3 text-xs",
-        size === "md" && "h-10 px-4 text-sm",
+        isStatic && "btn-static",
+        size === "xs" && (icon ? "h-7 ps-1.5 pe-2 text-[11.5px]" : "h-7 px-2 text-[11.5px]"),
+        size === "sm" && (icon ? "h-8 ps-2.5 pe-3 text-xs" : "h-8 px-3 text-xs"),
+        size === "md" && (icon ? "h-10 ps-3.5 pe-4 text-sm" : "h-10 px-4 text-sm"),
         variant === "default" && "border-border2 bg-panel text-text hover:bg-panel2 hover:border-border3 shadow-[0_1px_0_rgba(0,0,0,0.03)]",
         variant === "primary" && "border-ink bg-ink text-white hover:bg-ink-hover hover:border-ink-hover shadow-[0_1px_2px_rgba(0,0,0,0.12)]",
         variant === "accent2" && "border-accent2/30 bg-accent2/10 text-accent2 hover:bg-accent2/15",
@@ -124,8 +134,55 @@ export function Toggle({
   );
 }
 
-export function Card({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={cn("rounded-lg border border-border bg-panel shadow-[0_1px_2px_rgba(20,20,30,0.03)]", className)}>{children}</div>;
+export function Card({
+  className,
+  children,
+  interactive,
+  tone,
+}: {
+  className?: string;
+  children: ReactNode;
+  /** podnosi się lekko na hover */
+  interactive?: boolean;
+  /** stan: obwódka w kolorze */
+  tone?: "accent" | "ok";
+}) {
+  return (
+    <div className={cn("card rounded-lg", interactive && "card-hover", className)} data-tone={tone}>
+      {children}
+    </div>
+  );
+}
+
+/** Cross-fade dwóch ikon (obie w DOM): scale 0.25→1, opacity, blur 4px→0. */
+export function IconSwap({ active, a, b, className }: { active: boolean; a: ReactNode; b: ReactNode; className?: string }) {
+  return (
+    <span className={cn("icon-swap", className)} aria-hidden>
+      <span data-hidden={active || undefined}>{a}</span>
+      <span data-hidden={!active || undefined}>{b}</span>
+    </span>
+  );
+}
+
+/** Kwadratowy przycisk z ikoną (akcje wierszowe). */
+export function IconButton({
+  className,
+  tone = "default",
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement> & { tone?: "default" | "danger" }) {
+  return (
+    <button
+      type="button"
+      className={cn(
+        "btn inline-flex h-7 w-7 items-center justify-center rounded-md text-muted",
+        tone === "default" && "hover:text-text hover:bg-panel3",
+        tone === "danger" && "hover:text-danger hover:bg-danger/5",
+        "disabled:opacity-40 disabled:cursor-not-allowed",
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 
 export function SectionTitle({ children, right, className }: { children: ReactNode; right?: ReactNode; className?: string }) {
@@ -219,24 +276,18 @@ export function CopyButton({
       setTimeout(() => setDone(false), 1400);
     }
   };
+  const icons = <IconSwap active={done} a={<Copy className="h-3.5 w-3.5" />} b={<Check className="h-3.5 w-3.5 text-ok" />} />;
   if (iconOnly) {
     return (
-      <button
-        type="button"
-        onClick={onClick}
-        title={title ?? label}
-        className={cn("btn inline-flex items-center justify-center rounded-md p-1 text-muted hover:text-text hover:bg-panel3", className)}
-      >
-        <span key={done ? "d" : "c"} className="swap">
-          {done ? <Check className="h-3.5 w-3.5 text-ok" /> : <Copy className="h-3.5 w-3.5" />}
-        </span>
-      </button>
+      <IconButton onClick={onClick} title={title ?? label} aria-label={title ?? label} className={className}>
+        {icons}
+      </IconButton>
     );
   }
   return (
-    <Button size={size} variant={variant} onClick={onClick} title={title} className={className}>
+    <Button size={size} variant={variant} icon onClick={onClick} title={title} className={className}>
+      {icons}
       <span key={done ? "d" : "c"} className="swap">
-        {done ? <Check className="h-3.5 w-3.5 text-ok" /> : <Copy className="h-3.5 w-3.5" />}
         {done ? doneLabel : label}
       </span>
     </Button>

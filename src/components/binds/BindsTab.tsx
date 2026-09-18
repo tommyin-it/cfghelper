@@ -4,7 +4,7 @@ import { Crosshair, Trash2, Pencil, KeyboardIcon } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { CODE_TO_KEY, keyFromMouseButton, keyLabel, KEY_BY_ID } from "@/data/keys";
 import { bindLine } from "@/lib/generate";
-import { Button, Card, CopyButton, PageHeader, SectionTitle, Kbd } from "../ui/ui";
+import { Button, Card, CopyButton, IconButton, PageHeader, SectionTitle, Kbd } from "../ui/ui";
 import { KeyPicker } from "./KeyPicker";
 import { Keyboard } from "./Keyboard";
 import { BindEditor } from "./BindEditor";
@@ -77,7 +77,7 @@ export function BindsTab() {
     <div className="space-y-3">
       <PageHeader title="Bindy" desc="Kliknij klawisz na klawiaturze, żeby przypisać mu komendę. Pomarańczowe klawisze mają już bind.">
         <span className="text-xs text-muted tnum">{bindList.length} zbindowanych</span>
-        <Button size="sm" variant={capture ? "accent2" : "default"} onClick={() => setCapture(!capture)}>
+        <Button size="sm" icon variant={capture ? "accent2" : "default"} onClick={() => setCapture(!capture)}>
           <Crosshair className="h-3.5 w-3.5" />
           {capture ? "Nasłuchuję… (Esc anuluje)" : "Wykryj naciśnięty klawisz"}
         </Button>
@@ -112,7 +112,7 @@ export function BindsTab() {
           ) : (
             <div className="space-y-1 max-h-[480px] overflow-y-auto pr-1">
               {bindList.map(([key, cmd]) => (
-                <div key={key} className="flex items-center gap-2 rounded-md border border-border bg-panel2 px-2 py-1.5 text-xs group transition-colors duration-150 ease hover:border-border3">
+                <div key={key} className="flex items-center gap-2 rounded-[10px] bg-panel2 p-1 pr-1.5 text-xs group transition-[background-color] duration-100 ease-out hover:bg-panel3">
                   <KeyPicker
                     value={key}
                     onChange={(k) => {
@@ -124,18 +124,18 @@ export function BindsTab() {
                     binds={binds}
                     command={cmd}
                     title={`Przenieś bind z ${key}`}
-                    className="w-[120px] justify-center h-7"
+                    className="w-[116px] justify-center h-7 rounded-md"
                   />
                   <code className="flex-1 font-mono text-[11px] text-accent-hi truncate" title={cmd}>
                     {cmd}
                   </code>
-                  <button className="btn rounded-md p-1 text-muted hover:text-text hover:bg-panel3" title="Edytuj" onClick={() => selectKey(key)}>
+                  <IconButton title="Edytuj" aria-label="Edytuj" onClick={() => selectKey(key)}>
                     <Pencil className="h-3.5 w-3.5" />
-                  </button>
+                  </IconButton>
                   <CopyButton iconOnly text={() => bindLine(key, cmd)} title="Kopiuj linię bind" />
-                  <button className="btn rounded-md p-1 text-muted hover:text-danger hover:bg-danger/5" title="Usuń" onClick={() => removeBind(key)}>
+                  <IconButton tone="danger" title="Usuń" aria-label="Usuń" onClick={() => removeBind(key)}>
                     <Trash2 className="h-3.5 w-3.5" />
-                  </button>
+                  </IconButton>
                 </div>
               ))}
             </div>

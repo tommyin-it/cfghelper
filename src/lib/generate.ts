@@ -92,11 +92,14 @@ export function generateCfg(
   );
   for (const cat of orderedCats) {
     c(`--- ${catLabel(cat)} ---`);
-    for (const [name, value] of groups.get(cat)!) {
+    const rows = groups.get(cat)!;
+    // komentarze wyrównane do najdłuższej linii w grupie (+2 spacje), nie do stałej kolumny
+    const col = Math.max(...rows.map(([n, v]) => n.length + 1 + quote(v).length)) + 2;
+    for (const [name, value] of rows) {
       const def = byName.get(name);
-      const pad = opts.comments && def ? " ".repeat(Math.max(1, 44 - name.length - quote(value).length)) : "";
-      const hint = opts.comments && def ? `${pad}// ${def.label}` : "";
-      lines.push(`${name} ${quote(value)}${hint}`);
+      const stmt = `${name} ${quote(value)}`;
+      const hint = opts.comments && def ? `${" ".repeat(Math.max(1, col - stmt.length))}// ${def.label}` : "";
+      lines.push(`${stmt}${hint}`);
     }
     lines.push("");
   }

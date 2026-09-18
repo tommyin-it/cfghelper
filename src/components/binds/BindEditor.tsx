@@ -121,7 +121,7 @@ export function BindEditor() {
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && save()}
         />
-        <Button variant="primary" onClick={save} title="Zapisz bind">
+        <Button variant="primary" icon onClick={save} title="Zapisz bind">
           <Check className="h-3.5 w-3.5" /> Zapisz
         </Button>
         {current && (

@@ -119,13 +119,13 @@ export function EditorTab() {
           Pliki
         </SectionTitle>
         <div className="flex flex-col gap-1.5 mb-3">
-          <Button onClick={() => newFile()} className="justify-start">
+          <Button icon onClick={() => newFile()} className="justify-start">
             <FilePlus2 className="h-3.5 w-3.5" /> Nowy pusty plik
           </Button>
-          <Button onClick={() => newFile(generated, "autoexec.cfg")} className="justify-start" title="Nowy plik z aktualnie wygenerowanym cfg">
+          <Button icon onClick={() => newFile(generated, "autoexec.cfg")} className="justify-start" title="Nowy plik z aktualnie wygenerowanym cfg">
             <FileCode2 className="h-3.5 w-3.5" /> Nowy z generatora
           </Button>
-          <Button onClick={() => fileInput.current?.click()} className="justify-start">
+          <Button icon onClick={() => fileInput.current?.click()} className="justify-start">
             <Upload className="h-3.5 w-3.5" /> Wczytaj z dysku (.cfg/.vcfg)
           </Button>
           <input ref={fileInput} type="file" accept=".cfg,.txt,.vcfg" className="hidden" onChange={onUpload} />
@@ -176,17 +176,17 @@ export function EditorTab() {
               </button>
               <span key={saved ? "s" : "u"} className="swap"><Badge tone={saved ? "green" : "amber"}>{saved ? "zapisano" : "zapisywanie…"}</Badge></span>
               <div className="flex-1" />
-              <Button size="xs" onClick={() => { onChange(generated); toast("Wstawiono wygenerowany cfg"); }} title="Zastąp treść aktualnym wygenerowanym cfg">
+              <Button size="xs" icon onClick={() => { onChange(generated); toast("Wstawiono wygenerowany cfg"); }} title="Zastąp treść aktualnym wygenerowanym cfg">
                 <RefreshCw className="h-3 w-3" /> Wstaw z generatora
               </Button>
-              <Button size="xs" onClick={() => importToGenerator("merge")} title="Dopisz ustawienia i bindy z tego pliku do generatora">
+              <Button size="xs" icon onClick={() => importToGenerator("merge")} title="Dopisz ustawienia i bindy z tego pliku do generatora">
                 <Import className="h-3 w-3" /> Do generatora (dopisz)
               </Button>
-              <Button size="xs" onClick={() => importToGenerator("replace")} title="Zastąp config w generatorze zawartością tego pliku">
+              <Button size="xs" icon onClick={() => importToGenerator("replace")} title="Zastąp config w generatorze zawartością tego pliku">
                 <Import className="h-3 w-3" /> Do generatora (zastąp)
               </Button>
               <CopyButton size="xs" text={() => draft} />
-              <Button size="xs" variant="primary" onClick={() => downloadText(active.name, draft)}>
+              <Button size="xs" variant="primary" icon onClick={() => downloadText(active.name, draft)}>
                 <Download className="h-3 w-3" /> Pobierz
               </Button>
               <Button

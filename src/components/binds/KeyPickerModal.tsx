@@ -92,7 +92,7 @@ export function KeyPickerModal({ open, value, command, binds, title, onSelect, o
       aria-label={title ?? "Wybierz klawisz"}
     >
       <div
-        className="modal-panel w-full max-w-[1040px] rounded-xl border border-border bg-panel shadow-[0_24px_64px_rgba(20,20,30,0.18),0_2px_6px_rgba(20,20,30,0.06)]"
+        className="modal-panel w-full max-w-[1040px] rounded-xl bg-panel shadow-[0_0_0_1px_oklch(0_0_0/0.06),0_24px_64px_rgba(20,20,30,0.18),0_2px_6px_rgba(20,20,30,0.06)]"
         data-closing={closing || undefined}
       >
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border">

@@ -99,7 +99,7 @@ export function CommandsTab() {
           <CommandRow key={e.n} e={e} />
         ))}
         {total > results.length && (
-          <Button className="w-full" onClick={() => setLimit(limit + PAGE)}>
+          <Button className="w-full" icon onClick={() => setLimit(limit + PAGE)}>
             <ChevronDown className="h-4 w-4" /> Pokaż więcej ({total - results.length} pozostało)
           </Button>
         )}
@@ -124,7 +124,7 @@ function CommandRow({ e }: { e: CommandEntry }) {
   const bindIt = () => setPick(true);
 
   return (
-    <Card className={cn("px-3 py-2 transition-colors duration-150 ease hover:border-border3", inCfg && "border-accent/40 bg-accent/[0.035] hover:border-accent/60")}>
+    <Card className="px-3 py-2" interactive tone={inCfg ? "accent" : undefined}>
       <div className="flex flex-wrap items-center gap-2">
         <button className="font-mono text-xs text-accent2 hover:underline underline-offset-2" onClick={() => setOpen(!open)} aria-expanded={open}>
           {e.n}
@@ -148,6 +148,7 @@ function CommandRow({ e }: { e: CommandEntry }) {
               <Button
                 size="xs"
                 variant="default"
+                icon
                 onClick={() => {
                   setCvar(e.n, val);
                   toast(`${e.n} ${val} dodano do cfg`);
@@ -160,6 +161,7 @@ function CommandRow({ e }: { e: CommandEntry }) {
           {e.k === "cmd" && (
             <Button
               size="xs"
+              icon
               onClick={() => {
                 addCustom(e.n);
                 toast(`Dodano linię: ${e.n}`);
@@ -169,7 +171,7 @@ function CommandRow({ e }: { e: CommandEntry }) {
               <Plus className="h-3 w-3" /> Linia
             </Button>
           )}
-          <Button size="xs" onClick={bindIt} title="Przypisz do klawisza">
+          <Button size="xs" icon onClick={bindIt} title="Przypisz do klawisza">
             <KeyboardIcon className="h-3 w-3" /> Binduj
           </Button>
           <CopyButton iconOnly text={e.n} title="Kopiuj nazwę" />

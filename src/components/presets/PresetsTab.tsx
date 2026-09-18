@@ -4,8 +4,7 @@ import { Plus, Check, TriangleAlert, Sparkles, Search } from "lucide-react";
 import { PRESETS, PRESET_CATEGORIES } from "@/data/presets";
 import { useStore } from "@/lib/store";
 import type { Preset } from "@/lib/types";
-import { cn } from "@/lib/utils";
-import { Badge, Button, Card, Chip, Input, PageHeader } from "../ui/ui";
+import { Badge, Button, Card, Chip, IconSwap, Input, PageHeader } from "../ui/ui";
 import { KeyPicker } from "../binds/KeyPicker";
 
 export function PresetsTab() {
@@ -89,7 +88,7 @@ function PresetCard({ preset: p }: { preset: Preset }) {
   });
 
   return (
-    <Card className={cn("p-3.5 flex flex-col transition-colors duration-150 ease", isApplied && "border-ok/40 bg-ok/[0.03]")}>
+    <Card className="p-3.5 flex flex-col" interactive tone={isApplied ? "ok" : undefined}>
       <div className="flex items-start justify-between gap-2">
         <div>
           <div className="text-[13px] font-semibold tracking-tight flex items-center gap-2 flex-wrap">
@@ -161,9 +160,9 @@ function PresetCard({ preset: p }: { preset: Preset }) {
             </>
           )}
         </div>
-        <Button variant={isApplied ? "default" : "primary"} size="xs" onClick={apply}>
+        <Button variant={isApplied ? "default" : "primary"} size="xs" icon onClick={apply}>
+          <IconSwap active={!!isApplied} a={<Plus className="h-3 w-3" />} b={<Check className="h-3 w-3 text-ok" />} />
           <span key={isApplied ? "a" : "b"} className="swap">
-            {isApplied ? <Check className="h-3 w-3 text-ok" /> : <Plus className="h-3 w-3" />}
             {isApplied ? "Dodane" : "Dodaj do cfg"}
           </span>
         </Button>

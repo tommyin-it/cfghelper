@@ -128,7 +128,7 @@ export function AppShell() {
           <div
             className={cn(
               "grid grid-cols-1 gap-5",
-              tab !== "editor" && "xl:grid-cols-[minmax(0,1fr)_400px] 2xl:grid-cols-[minmax(0,1fr)_460px]",
+              tab !== "editor" && "xl:grid-cols-[minmax(0,1fr)_500px] 2xl:grid-cols-[minmax(0,1fr)_600px]",
             )}
           >
             <div className="min-w-0 enter-fade" key={tab}>
@@ -141,8 +141,8 @@ export function AppShell() {
             </div>
             {tab !== "editor" && (
               <aside className="hidden xl:block">
-                <div className="sticky top-[4.75rem] max-h-[calc(100vh-6rem)] overflow-y-auto pr-1">
-                  <PreviewPanel />
+                <div className="sticky top-[4.75rem] h-[calc(100vh-6rem)]">
+                  <PreviewPanel fill />
                 </div>
               </aside>
             )}
